@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+venv/
+ENV/
+logs/
+*.log
+
+# Node
+node_modules/
+dist/
+build/
+.DS_Store
+
+# Frontend specifics
+Inventory-Frontend-React/node_modules/
+Inventory-Frontend-React/dist/
+
+# IDE
+.vscode/
+.idea/
+.gemini/
+.agents/

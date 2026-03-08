@@ -1,0 +1,100 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: inventory_db # Default DB
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+
+  inventory_service:
+    build: .
+    command: uvicorn inventory_service.app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL_INVENTORY=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/inventory_db
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+    volumes:
+      - ./common:/app/common
+      - ./inventory_service:/app/inventory_service
+      - ./inventory_service/alembic/versions:/app/inventory_service/alembic/versions
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+
+  supplier_service:
+    build: .
+    command: uvicorn supplier_service.app.main:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL_SUPPLIER=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/supplier_db
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+    volumes:
+      - ./common:/app/common
+      - ./supplier_service:/app/supplier_service
+      - ./supplier_service/alembic/versions:/app/supplier_service/alembic/versions
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+
+  sales_service:
+    build: .
+    command: uvicorn sales_service.app.main:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL_SALES=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/sales_db
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+    volumes:
+      - ./common:/app/common
+      - ./sales_service:/app/sales_service
+      - ./sales_service/alembic/versions:/app/sales_service/alembic/versions
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+
+  auth_service:
+    build: .
+    command: uvicorn auth_service.app.main:app --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+    environment:
+      - DATABASE_URL_AUTH=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/auth_db
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+    volumes:
+      - ./common:/app/common
+      - ./auth_service:/app/auth_service
+      - ./auth_service/alembic/versions:/app/auth_service/alembic/versions
+      - ./logs:/app/logs
+      - ./scripts:/app/scripts
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: ../Inventory-Frontend-React
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - auth_service
+      - inventory_service
+      - supplier_service
+      - sales_service
+
+volumes:
+  postgres_data:

@@ -1,0 +1,3 @@
+CREATE DATABASE supplier_db;
+CREATE DATABASE sales_db;
+CREATE DATABASE auth_db;

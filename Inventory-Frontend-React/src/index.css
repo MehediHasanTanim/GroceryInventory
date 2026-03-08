@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --font-main: 'Plus Jakarta Sans', sans-serif;
+  
+  /* Modern Light Palette */
+  --bg-main: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-glow: rgba(79, 70, 229, 0.08);
+  
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-dim: #94a3b8;
+  
+  --border: rgba(0, 0, 0, 0.06);
+  --border-hover: rgba(0, 0, 0, 0.1);
+  
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  
+  --glass: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.05);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: all 0.2s ease;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  outline: none;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-surface-elevated);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
+
+/* Premium Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 5px var(--primary-glow); }
+  50% { box-shadow: 0 0 20px var(--primary-glow); }
+  100% { box-shadow: 0 0 5px var(--primary-glow); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.glass-card {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
