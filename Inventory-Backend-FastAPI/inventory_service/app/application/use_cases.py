@@ -139,3 +139,26 @@ class DeleteProductUseCase:
             if not deleted:
                 raise ValueError(f"Product with ID {product_id} not found")
             return deleted
+
+class GetInventoryStatsUseCase:
+    def __init__(self, uow: UnitOfWork):
+        self.uow = uow
+
+    def execute(self) -> dict:
+        with self.uow:
+            products = self.uow.products.list(limit=1000, offset=0)
+            total_products = len(products)
+            low_stock_items = 0
+            total_value = 0.0
+            
+            for product in products:
+                quantity = product.stock.quantity if product.stock else 0
+                if quantity < 10:
+                    low_stock_items += 1
+                total_value += product.price * quantity
+                
+            return {
+                "total_products": total_products,
+                "low_stock_items": low_stock_items,
+                "total_value": total_value
+            }

@@ -58,3 +58,9 @@ class ProductResponse(BaseModel):
 # Stock Update Request
 class UpdateStockRequest(BaseModel):
     quantity_change: int
+
+# Stats Response
+class InventoryStatsResponse(BaseModel):
+    total_products: int
+    low_stock_items: int
+    total_value: float

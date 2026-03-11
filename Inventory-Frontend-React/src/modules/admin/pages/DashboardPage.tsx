@@ -43,7 +43,7 @@ const DashboardPage: React.FC = () => {
     }, []);
 
     const stats = [
-        { title: 'Total Revenue', value: '$128,430', change: '+12.5%', icon: TrendingUp, color: '#6366f1' },
+        { title: 'Total Revenue', value: '128,430', change: '+12.5%', icon: TrendingUp, color: '#6366f1' },
         { title: 'Active Products', value: '2,840', change: '+3.2%', icon: Package, color: '#10b981' },
         { title: 'Total Users', value: '156', change: '+8.1%', icon: UsersIcon, color: '#8b5cf6' },
         { title: 'System Load', value: '14%', change: '-2.4%', icon: Activity, color: '#f59e0b' },

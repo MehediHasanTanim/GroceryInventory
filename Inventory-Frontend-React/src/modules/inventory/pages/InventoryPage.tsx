@@ -64,6 +64,11 @@ const InventoryPage: React.FC = () => {
     const [stockChangeAmount, setStockChangeAmount] = useState<number | string>('');
     const [formLoading, setFormLoading] = useState(false);
     const [formError, setFormError] = useState('');
+    const [stats, setStats] = useState({
+        total_products: 0,
+        low_stock_items: 0,
+        total_value: 0
+    });
 
     // Delete Confirmation State
     const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'product' | 'category', id: string, name: string } | null>(null);
@@ -87,14 +92,16 @@ const InventoryPage: React.FC = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [prodRes, catRes, suppRes] = await Promise.all([
+            const [prodRes, catRes, suppRes, statsRes] = await Promise.all([
                 inventoryApi.get('/api/v1/products'),
                 inventoryApi.get('/api/v1/categories'),
-                supplierApi.get('/api/v1/suppliers')
+                supplierApi.get('/api/v1/suppliers'),
+                inventoryApi.get('/api/v1/stats')
             ]);
             setProducts(prodRes.data);
             setCategories(catRes.data);
             setSuppliers(suppRes.data);
+            setStats(statsRes.data);
         } catch (error) {
             console.error('Failed to fetch inventory data:', error);
         } finally {
@@ -288,7 +295,7 @@ const InventoryPage: React.FC = () => {
                     </div>
                     <div className="stat-info">
                         <span className="label">Total Products</span>
-                        <span className="value">{products.length}</span>
+                        <span className="value">{stats.total_products}</span>
                     </div>
                 </div>
                 <div className="stat-card glass-card">
@@ -297,7 +304,7 @@ const InventoryPage: React.FC = () => {
                     </div>
                     <div className="stat-info">
                         <span className="label">Low Stock Items</span>
-                        <span className="value">12</span>
+                        <span className="value">{stats.low_stock_items}</span>
                     </div>
                 </div>
                 <div className="stat-card glass-card">
@@ -306,7 +313,7 @@ const InventoryPage: React.FC = () => {
                     </div>
                     <div className="stat-info">
                         <span className="label">Total Value</span>
-                        <span className="value">${products.reduce((acc, p) => acc + (p.price * (p.stock?.quantity || 0)), 0).toLocaleString()}</span>
+                        <span className="value">{stats.total_value.toLocaleString()}</span>
                     </div>
                 </div>
             </div>
@@ -397,14 +404,14 @@ const InventoryPage: React.FC = () => {
                                         <div className="price-cell">
                                             {product.discount > 0 ? (
                                                 <>
-                                                    <span className="original-price">${product.price.toFixed(2)}</span>
+                                                    <span className="original-price">{product.price.toFixed(2)}</span>
                                                     <span className="price-text discounted">
-                                                        ${(product.price - (product.price * product.discount / 100)).toFixed(2)}
+                                                        {(product.price - (product.price * product.discount / 100)).toFixed(2)}
                                                     </span>
                                                     <span className="discount-tag">-{product.discount}%</span>
                                                 </>
                                             ) : (
-                                                <span className="price-text">${product.price.toFixed(2)}</span>
+                                                <span className="price-text">{product.price.toFixed(2)}</span>
                                             )}
                                         </div>
                                     </td>
@@ -483,7 +490,7 @@ const InventoryPage: React.FC = () => {
                                 </div>
                                 <div className="form-row">
                                     <div className="form-group">
-                                        <label>Price ($)</label>
+                                        <label>Price</label>
                                         <input
                                             type="number"
                                             required

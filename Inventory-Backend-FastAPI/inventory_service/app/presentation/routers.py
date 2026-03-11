@@ -5,7 +5,8 @@ from common.security import admin_required
 from inventory_service.app.presentation.schemas import (
     CreateProductRequest, ProductResponse, UpdateProductRequest,
     UpdateStockRequest, StockResponse,
-    CreateCategoryRequest, CategoryResponse
+    CreateCategoryRequest, CategoryResponse,
+    InventoryStatsResponse
 )
 from inventory_service.app.application.dto import CategoryCreateDTO, ProductCreateDTO, ProductUpdateDTO, StockUpdateDTO
 from inventory_service.app.infrastructure.uow import SqlAlchemyInventoryUnitOfWork
@@ -13,7 +14,7 @@ from inventory_service.app.application.use_cases import (
     CreateProductUseCase, GetProductUseCase, UpdateProductUseCase,
     UpdateStockUseCase, ListProductsUseCase, DeleteProductUseCase,
     CreateCategoryUseCase, GetCategoryUseCase, ListCategoriesUseCase,
-    DeleteCategoryUseCase
+    DeleteCategoryUseCase, GetInventoryStatsUseCase
 )
 from common.config import settings
 
@@ -138,3 +139,8 @@ def update_stock(product_id: str, request: UpdateStockRequest, uow: SqlAlchemyIn
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.get("/stats", response_model=InventoryStatsResponse)
+def get_inventory_stats(uow: SqlAlchemyInventoryUnitOfWork = Depends(get_uow)):
+    use_case = GetInventoryStatsUseCase(uow)
+    return use_case.execute()
